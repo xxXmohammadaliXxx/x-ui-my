@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository (includes the committed offline tarball)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Resolve target tag
         id: tag
