@@ -1,0 +1,112 @@
+import { useTranslation } from 'react-i18next';
+import { Button, Modal } from 'antd';
+import { DownloadOutlined, UploadOutlined } from '@ant-design/icons';
+
+import { HttpUtil, PromiseUtil } from '@/utils';
+import './BackupModal.css';
+
+interface BusyEvent {
+  busy: boolean;
+  tip?: string;
+}
+
+interface BackupModalProps {
+  open: boolean;
+  basePath: string;
+  onClose: () => void;
+  onBusy: (e: BusyEvent) => void;
+}
+
+export default function BackupModal({ open, basePath: _basePath, onClose, onBusy }: BackupModalProps) {
+  const { t } = useTranslation();
+  const isPostgres = window.X_UI_DB_TYPE === 'postgres';
+
+  function exportDb() {
+    window.location.href = (window.X_UI_BASE_PATH || '') + 'panel/api/server/getDb';
+  }
+
+  function exportMigration() {
+    window.location.href = (window.X_UI_BASE_PATH || '') + 'panel/api/server/getMigration';
+  }
+
+  function importDb() {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = isPostgres ? '.dump' : '.db';
+    fileInput.addEventListener('change', async (e) => {
+      const dbFile = (e.target as HTMLInputElement).files?.[0];
+      if (!dbFile) return;
+
+      const formData = new FormData();
+      formData.append('db', dbFile);
+
+      onClose();
+      onBusy({ busy: true, tip: `${t('pages.index.importDatabase')}…` });
+
+      const upload = await HttpUtil.post('/panel/api/server/importDB', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      if (!upload?.success) {
+        onBusy({ busy: false });
+        return;
+      }
+
+      // The restore is only half done until the panel restarts and this page
+      // reloads: until then the panel keeps serving from pre-import state and
+      // the open page still shows the data it fetched before the upload. Reload
+      // even if the restart call itself fails, so the page can never sit on a
+      // stale view of a database that has already been replaced.
+      onBusy({ busy: true, tip: `${t('pages.settings.restartPanel')}…` });
+      await HttpUtil.post('/panel/api/setting/restartPanel', undefined, { silent: true }).catch(() => null);
+      await PromiseUtil.sleep(5000);
+      window.location.reload();
+    });
+    fileInput.click();
+  }
+
+  return (
+    <Modal
+      open={open}
+      title={t('pages.index.backupTitle')}
+      footer={null}
+      onCancel={onClose}
+    >
+      {isPostgres && (
+        <div className="backup-description" style={{ marginBottom: 16 }}>
+          {t('pages.index.backupPostgresNote')}
+        </div>
+      )}
+      <div className="backup-list">
+        <div className="backup-item">
+          <div className="backup-meta">
+            <div className="backup-title">{t('pages.index.exportDatabase')}</div>
+            <div className="backup-description">
+              {isPostgres ? t('pages.index.exportDatabasePgDesc') : t('pages.index.exportDatabaseDesc')}
+            </div>
+          </div>
+          <Button type="primary" onClick={exportDb} icon={<DownloadOutlined />} />
+        </div>
+
+        <div className="backup-item">
+          <div className="backup-meta">
+            <div className="backup-title">{t('pages.index.migrationDownload')}</div>
+            <div className="backup-description">
+              {isPostgres ? t('pages.index.migrationDownloadPgDesc') : t('pages.index.migrationDownloadDesc')}
+            </div>
+          </div>
+          <Button type="primary" onClick={exportMigration} icon={<DownloadOutlined />} />
+        </div>
+
+        <div className="backup-item">
+          <div className="backup-meta">
+            <div className="backup-title">{t('pages.index.importDatabase')}</div>
+            <div className="backup-description">
+              {isPostgres ? t('pages.index.importDatabasePgDesc') : t('pages.index.importDatabaseDesc')}
+            </div>
+          </div>
+          <Button type="primary" onClick={importDb} icon={<UploadOutlined />} />
+        </div>
+      </div>
+    </Modal>
+  );
+}
