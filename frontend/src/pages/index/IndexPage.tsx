@@ -122,7 +122,7 @@ export default function IndexPage() {
     if (panelUpdateInfo.updateAvailable) {
       setPanelUpdateOpen(true);
     } else {
-      window.open('https://github.com/admin6501/3x-ui/releases', '_blank', 'noopener,noreferrer');
+      window.open('https://github.com/xxXmohammadaliXxx/x-ui-my/releases', '_blank', 'noopener,noreferrer');
     }
   }
 

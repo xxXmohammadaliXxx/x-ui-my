@@ -16,7 +16,7 @@ A customized fork of [MHSanaei/3X-UI](https://github.com/MHSanaei/3x-ui) — an 
   - `readonly` — can view everything but cannot perform any write action.
 - **Audit log** — every admin action (create / update / delete admin, password reset, …) is recorded with actor, target, and timestamp.
 - **Offline install bundle** — install on a server with no internet using a self-contained tarball (panel binary + Xray-core + geo data). See [`offline/`](offline/).
-- **Fork-aware updater** — the panel's "check for update" reads releases from this fork (`admin6501/3x-ui`).
+- **Fork-aware updater** — the panel's "check for update" reads releases from this fork (`xxXmohammadaliXxx/x-ui-my`).
 - **PostgreSQL-safe migration** — SQLite → PostgreSQL migration copies all RBAC data (admins, roles, allowed inbounds, audit logs).
 
 ## Reseller traffic allocation
@@ -67,7 +67,7 @@ Beyond the basics above, the panel also includes:
 ## Quick Start (online)
 
 ```bash
-bash <(curl -Ls https://raw.githubusercontent.com/admin6501/3x-ui/main/install.sh)
+bash <(curl -Ls https://raw.githubusercontent.com/xxXmohammadaliXxx/x-ui-my/main/install.sh)
 ```
 
 A random username, password, and web base path are generated during install. Run `x-ui` afterwards to open the management menu (start/stop, reset credentials, manage SSL, etc.).

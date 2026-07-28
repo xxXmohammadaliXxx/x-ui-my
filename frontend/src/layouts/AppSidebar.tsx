@@ -44,7 +44,7 @@ import { currentPermissions } from '@/lib/permissions';
 import './AppSidebar.css';
 
 const SIDEBAR_COLLAPSED_KEY = 'isSidebarCollapsed';
-const REPO_URL = 'https://github.com/admin6501/3x-ui';
+const REPO_URL = 'https://github.com/xxXmohammadaliXxx/x-ui-my';
 const LOGOUT_KEY = '__logout__';
 
 type IconName = 'dashboard' | 'inbound' | 'team' | 'groups' | 'setting' | 'tool' | 'cluster' | 'hosts' | 'logout' | 'apidocs' | 'outbound' | 'routing' | 'admins' | 'plans' | 'usage' | 'tutorials' | 'shop';
